@@ -170,9 +170,11 @@ def DLT(originali, slike):
   v = v[-1]
   return np.array([[v[0], v[1], v[2]], [v[3], v[4], v[5]], [v[6], v[7], v[8]]])
 
+print("Matrica transformacije dobijena naivnim algoritmom:")
 print(naivni([[1, 1], [5, 2], [6, 4], [-1, 7]], [[0, 0], [10, 0], [10, 5], [0, 5]]))
 print('-------------------------------------------------------------')
-DLT([[1, 1], [5, 2], [6, 4], [-1, 7]], [[0, 0], [10, 0], [10, 5], [0, 5]])
+print("Matrica transformacije dobijena DLT algoritmom:")
+print(DLT([[1, 1], [5, 2], [6, 4], [-1, 7]], [[0, 0], [10, 0], [10, 5], [0, 5]]))
 
 '''
   Ova funkcija predstavlja implementaciju unapredjenog DLT algoritma za odredjivanje 
@@ -237,3 +239,109 @@ print()
 print("Matrica dobijena kada se vratimo u stare koordinate:")
 print(LA.inv(transf_slik)@matrica_ @ transf_orig)
 
+def test():
+  # Slucaj sa cetiri tacke
+  orig = np.array([[-5,0,1], [-6,0.5,1], [-5,3,1], [-4,2,1]])
+  nove = np.array([[3,0,1], [1,1.5,1], [2.7,2.5,1], [6,2,1]])
+
+  print('Originalne tačke:')
+  print(orig)
+  print()
+
+  print('Njihove slike:')
+  print(nove)
+  print()
+
+  print('Naivna matrica:')
+  naiv = naivni(nove, orig)
+  print(naiv)
+  print()
+
+  print('DLT matrica:')
+  dlt = DLT(nove, orig)
+  print(dlt)
+  print()
+
+  print('Skalirana DLT:')
+  print(naiv[0][0]/dlt[0][0] * dlt)
+  print()
+
+  print('Zaključak: u pitanju je ista transformacija.')
+  print()
+
+  print('mDLT matrica:')
+  mdlt = DLT_unapredjeni(nove, orig)
+  print(mdlt)
+  print()
+
+  print('Skalirana mDLT:')
+  print(dlt[0][0]/mdlt[0][0] * mdlt)
+  print()
+
+  print('Zaključak: u pitanju je ista transformacija.')
+  print()
+
+  # Slucaj sa vise tacaka
+  orig = np.array([[-5,0,1], [-6,0.5,1], [-5,3,1],
+                   [-4,2,1], [-2,1.5,1], [-4,0,1]])
+  nove = np.array([[3,0,1], [1,1.5,1], [2.7,2.5,1],
+                   [6,2,1], [6.5,0.5,1], [4,0,1]])
+
+  print('Originalne tačke:')
+  print(orig)
+  print()
+
+  print('Njihove slike:')
+  print(nove)
+  print()
+
+  print('DLT bez šuma:')
+  dlt0 = DLT(nove, orig)
+  print(dlt0)
+  print()
+
+  print('mDLT bez šuma:')
+  mdlt0 = DLT_unapredjeni(nove, orig)
+  print(mdlt0)
+  print()
+
+  print('Skalirana mDLT:')
+  print(dlt0[0][0]/mdlt0[0][0] * mdlt0)
+  print()
+
+  print('Zaključak: više tačaka unosi višeznačnost.')
+  print('Sada se skaliranjem mDLT ne dobija isto kao DLT.')
+  print()
+
+  # Slucaj sa sumom
+  orig[2], nove[0] = [-5.1,3,1], [3.1,0,1]
+
+  print('Originali sa šumom:')
+  print(orig)
+  print()
+
+  print('Slike sa šumom:')
+  print(nove)
+  print()
+
+  print('DLT sa šumom:')
+  dlt1 = DLT(nove, orig)
+  print(dlt1)
+  print()
+
+  print('Skalirana DLT:')
+  print(dlt0[0][0]/dlt1[0][0] * dlt1)
+  print()
+
+  print('mDLT sa šumom:')
+  mdlt1 = DLT_unapredjeni(nove, orig)
+  print(mdlt1)
+  print()
+
+  print('Skalirana mDLT:')
+  print(mdlt0[0][0]/mdlt1[0][0] * mdlt1)
+  print()
+
+  print('Zaključak: šum donekle utiče na transformaciju.')
+
+test()
