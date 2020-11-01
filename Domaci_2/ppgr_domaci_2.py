@@ -196,8 +196,11 @@ print(DLT_unapredjeni([[3, 2], [4, -2], [6, -3], [9, 4]], [[5, -2], [15, 8], [10
   da je unapredjeni DLT algoritam otporan na promenu koordinata
 '''
 
-originali = np.array([[1, 1], [5, 2], [6, 4], [-1, 7]])
-slike = np.array([[0, 0], [10, 0], [10, 5], [0, 5]])
+originali = np.array([[-5,0,1], [-6,0.5,1], [-5,3,1], [-4,2,1], [-2,1.5,1], [-4,0,1]])
+slike = np.array([[3,0,1], [1,1.5,1], [2.7,2.5,1], [6,2,1], [6.5,0.5,1], [4,0,1]])
+
+#originali = np.array([[1, 1], [5, 2], [6, 4], [-1, 7]])
+#slike = np.array([[0, 0], [10, 0], [10, 5], [0, 5]])
 
 originali_proj = np.array(prebaci_u_projektivne(originali))
 slike_proj = np.array(prebaci_u_projektivne(slike))
@@ -205,6 +208,7 @@ slike_proj = np.array(prebaci_u_projektivne(slike))
 matricaDLT = DLT(originali, slike)
 matricaDLTUn = DLT_unapredjeni(originali, slike)
 
+# Skaliranje matrica radi uporedjivanja
 matricaDLT = matricaDLT / (matricaDLTUn[0][0] / matricaDLT[0][0])
 matricaDLTUn = matricaDLTUn / (matricaDLTUn[0][0] / matricaDLT[0][0])
 
@@ -215,18 +219,21 @@ print("Matrica transformacije dobijena unapredjenim DLT algoritmom:")
 print(matricaDLTUn)
 print()
 
+# Martrice transformacije radi menjanja koordinata
 transf_orig = np.array([[0, 1, 2], [-1, 0, 3], [0, 0, 1]])
 transf_slik = np.array([[1, -1, 5], [1, 1, -2], [0, 0, 1]])
 
+# Mapiranje tacaka u novi koordinatni sistem
 originali = np.array([*map(lambda x: transf_orig @ x.T, originali_proj)])
 slike = np.array([*map(lambda x: transf_slik @ x.T, slike_proj)])
 
 originali = prebaci_u_afine(originali)
 slike = prebaci_u_afine(slike)
 
-matrica = np.array(DLT_unapredjeni(originali, slike))
+matrica_ = np.array(DLT_unapredjeni(originali, slike))
 print("Matrica dobijenja unapredjenim DLT algoritmom sa izmenjenim koordinatama:")
-print(matrica)
+print(matrica_)
 print()
 print("Matrica dobijena kada se vratimo u stare koordinate:")
-print(LA.inv(transf_slik)@matrica @ transf_orig)
+print(LA.inv(transf_slik)@matrica_ @ transf_orig)
+
