@@ -10,7 +10,6 @@ Original file is located at
 import numpy as np
 from numpy import linalg as LA
 import math
-import warnings
 '''
   Funkcija koja vrsi noriranje datog vektora
 '''
@@ -40,18 +39,18 @@ def AxisAngle(A):
     return
   '''
   
-  A = A - np.eye(3)
+  B = A - np.eye(3)
 
-  first = A[0]
-  second = A[1]
-  third = A[2]
+  first = B[0]
+  second = B[1]
+  third = B[2]
 
   p = np.cross(first, second)
   if not np.any(p):
     p = np.cross(first, third)
     if not np.any(p):
       p = np.cross(second, third)
-  p = normalize(p) # Trazeni jedinicni vektor p
+  p = p/LA.norm(p) # Trazeni jedinicni vektor p
 
   u = first # Vektor u je normalan na vektor p
   #print(u) 
@@ -59,12 +58,12 @@ def AxisAngle(A):
     u = second
     if not np.any(u):
       u = third
-  u = normalize(u)
+  u = u/LA.norm(u)
   #print(u)
-  #u_bar = np.matmul(A, u)
+  
   u_bar = A @ u
 
-  phi = math.acos(u @ u_bar.T)
+  phi = np.arccos(u @ u_bar)
 
   mesoviti = LA.det(np.array([u, u_bar, p]))
   if mesoviti < 0:
@@ -74,6 +73,7 @@ def AxisAngle(A):
 
 p, phi = AxisAngle(np.array([[1/9, -8/9, -4/9], [4/9, 4/9, -7/9], [8/9, -1/9, 4/9]]))
 #p, phi = AxisAngle(np.array([[1/9, 8/9, -4/9], [-4/9, 4/9, 7/9], [8/9, 1/9, 4/9]]))
+
 print(f"Jedinicni vektor oko kog se rotira: {p}")
 print(f"Ugao za koji se rotira: {phi}")
 
@@ -166,7 +166,7 @@ x, y, z, w = AngleAxis2Q(np.array([1/3, -2/3, 2/3]), math.pi/2)
 print(f"Trazeni kvaternion je: {x}*i {f'- {-y}' if y < 0 else f'+ {y}'}*j {f'- {-z}' if z < 0 else f'+ {z}'}*k {f'- {-w}' if w < 0 else f'+ {w}'}")
 
 def Q2AngleAxis(q):
-  q = normalize(q)
+  q = q/LA.norm(q)
 
   if q[3] < 0:
     q = -q
@@ -183,3 +183,65 @@ def Q2AngleAxis(q):
 p, phi = Q2AngleAxis(np.array([0.2357022603955158, -0.4714045207910316, 0.4714045207910316, 0.7071067811865476]))
 print(f"Prava oko koje se rotira je: [{p[0]}, {p[1]}, {p[2]}]")
 print(f"Ugao za koji se rotira je: {phi}")
+
+def test():
+  # Profesorov test primer
+  phi = -np.arctan(1/4)
+  theta = -np.arcsin(8/9)
+  psi =  np.arctan(4)
+
+  # Moj test primer
+  #phi = np.pi/3
+  #theta = np.pi/3
+  #psi = np.pi/3
+
+  # Ojlerovi uglovi
+  print('Ojlerovi uglovi:')
+  print('\u03D5 =', phi)
+  print('\u03B8 =', theta)
+  print('\u03C8 =', psi)
+  print()
+
+  # Matrica rotacije
+  print('Euler2A:')
+  A = Euler2A(-math.asin(1/4), -math.asin(8/9), math.atan(4))
+  print('A =')
+  print(A)
+  print()
+
+  # Osa i ugao
+  print('AxisAngle:')
+  p, phi0 = AxisAngle(A)
+  print('p =', p)
+  print('\u03D5 =', phi0)
+  print()
+
+  # Vracanje na matricu
+  print('Rodrigez:')
+  A = Rodrigez(p, phi0)
+  print('A =')
+  print(A)
+  print()
+
+  # Vracanje na uglove
+  print('A2Euler:')
+  phi, theta, psi = A2Euler(A)
+  print('\u03D5 =', phi)
+  print('\u03B8 =', theta)
+  print('\u03C8 =', psi)
+  print()
+
+  # Kvaternion
+  print('AxisAngle2Q:')
+  q = AngleAxis2Q(p, phi0)
+  x, y, z, w = q
+  print(f'q = {w:f} {x:+f}i {y:+f}j {z:+f}k')
+  print()
+
+  # Vracanje na osu i ugao
+  print('Q2AxisAngle:')
+  p, phi = Q2AngleAxis(q)
+  print('p =', p)
+  print('\u03D5 =', phi)
+
+test()
