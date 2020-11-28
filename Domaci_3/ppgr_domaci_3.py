@@ -32,12 +32,10 @@ def AxisAngle(A):
   if round(LA.det(A)) != 1:
     print("Determinanta matrice A je razlicita od 1!")
     return
-  '''
-  TODO
-  if A @ A.T == np.array([[1, 0, 0], [0, 1, 0], [0, 0, 1]]):
+  
+  if (np.matmul(A.T, A) != np.eye(3)).all():
     print("Matrica nije ortogonalna!")
     return
-  '''
   
   B = A - np.eye(3)
 
@@ -102,49 +100,47 @@ print(A)
 
 '''
   Funkcija prima ortogonalnu matricu A i vazi det(A) = 1
-  i vraca Ojlerove uglove phi, tetha, psi redom
+  i vraca Ojlerove uglove phi, theta, psi redom
 '''
 def A2Euler(A):
   if round(LA.det(A)) != 1:
     print("Determinanta matrice A je razlicita od 1!")
     return
-  '''
-  TODO
-  if A @ A.T == np.array([[1, 0, 0], [0, 1, 0], [0, 0, 1]]):
+  
+  if (np.matmul(A.T, A) != np.eye(3)).all():
     print("Matrica nije ortogonalna!")
     return
-  '''
 
   if (A[2][0] < 1 and A[2][0] > -1):
     psi = math.atan2(A[1][0], A[0][0])
-    tetha = math.asin(-A[2][0])
+    theta = math.asin(-A[2][0])
     phi = math.atan2(A[2][1], A[2][2])
-    return phi, tetha, psi
+    return phi, theta, psi
 
   if (A[2][0] == -1):
     phi = 0
-    tetha = math.pi/2
+    theta = math.pi/2
     psi = math.atan2(-A[0][1], A[1][1])
-    return phi, tetha, psi
+    return phi, theta, psi
 
   phi = 0
-  tetha = -math.pi/2
+  theta = -math.pi/2
   psi = math.atan2(-A[0][1], A[1][1])
-  return phi, tetha, psi
+  return phi, theta, psi
 
-phi, tetha, psi = A2Euler(np.array([[1/9, -8/9, -4/9], [4/9, 4/9, -7/9], [8/9, -1/9, 4/9]]))
+phi, theta, psi = A2Euler(np.array([[1/9, -8/9, -4/9], [4/9, 4/9, -7/9], [8/9, -1/9, 4/9]]))
 print("Trazeni Ojlerovi uglovi:")
 print(f"Psi: {psi}")
-print(f"Tetha: {tetha}")
+print(f"Tetha: {theta}")
 print(f"Phi: {phi}")
 
-def Euler2A(phi, tetha, psi):
+def Euler2A(phi, theta, psi):
   Rx_phi = Rodrigez(np.array([1, 0, 0]), phi)
-  Ry_tetha = Rodrigez(np.array([0, 1, 0]), tetha)
+  Ry_theta = Rodrigez(np.array([0, 1, 0]), theta)
   Rz_psi = Rodrigez(np.array([0, 0, 1]), psi)
 
-  return np.matmul(np.matmul(Rz_psi, Ry_tetha), Rx_phi)
-  #return Rz_psi @ Ry_tetha @ Rx_phi
+  return np.matmul(np.matmul(Rz_psi, Ry_theta), Rx_phi)
+  #return Rz_psi @ Ry_theta @ Rx_phi
 
 A = Euler2A(np.pi/3, np.pi/3, np.pi/3)
 print("Trazena matrica rotacije:")
@@ -161,8 +157,6 @@ def AngleAxis2Q(p, phi):
 
   return x, y, z, w
 
-# TODO
-# Kod mene nema nekog minusa kao kod profesora, istestiraj jos malo
 x, y, z, w = AngleAxis2Q(np.array([1/3, -2/3, 2/3]), math.pi/2)
 
 print(f"Trazeni kvaternion je: {x}*i {f'- {-y}' if y < 0 else f'+ {y}'}*j {f'- {-z}' if z < 0 else f'+ {z}'}*k {f'- {-w}' if w < 0 else f'+ {w}'}")
@@ -247,3 +241,5 @@ def test():
   print('\u03D5 =', phi)
 
 test()
+X = np.array([[1, 0, 0], [0, 1, 0], [0, 0, 1]])
+Y = np.array([[2, 2, 2], [0, 0, 0], [0, 0, 0]])
